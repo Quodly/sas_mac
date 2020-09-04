@@ -8,7 +8,7 @@ options yearcutoff = 1950;
 ##################################################
 *************************************************/;
 
-%global yymmdd_cur; 
+%global yymmdd_cur;
 %let    yymmdd_cur = %sysfunc(today(), yymmddn6.);
 
 /*************************************************
@@ -58,11 +58,11 @@ options yearcutoff = 1950;
 
 /************************************************/;
 
-%macro qtr_beg(yymm = &yymm_cur., lag = 1);
+%macro qua_beg(yymm = &yymm_cur., lag = 1);
   %sysfunc(intnx(quarter, %mon_beg(yymm = &yymm., lag = &lag.), 0, b))
 %mend;
 
-%macro qtr_end(yymm = &yymm_cur., lag = 1);
+%macro qua_end(yymm = &yymm_cur., lag = 1);
   %sysfunc(intnx(quarter, %mon_beg(yymm = &yymm., lag = &lag.), 0, e))
 %mend;
 
@@ -151,7 +151,7 @@ options yearcutoff = 1950;
   
   %do i = 0 %to 24;
     %local zz;
-    %let   zz = %sysfunc(putn(&i., z2.));
+    %let   zz = %sysfunc(putn(&i./01, z2.));
     
     %global yymm&zz.;
     %let    yymm&zz. = %yymm(yymm = &yymm., lag = %eval(&lag.+&i.));
@@ -170,15 +170,34 @@ options yearcutoff = 1950;
   
   %do i = 0 %to 24 %by 3;
     %local zz;
-    %let   zz = %sysfunc(putn(&i./3, z2.));
+    %let   zz = %sysfunc(putn(&i./03, z2.));
     
     %global yyqq&zz.;
     %let    yyqq&zz. = %yyqq(yymm = &yymm., lag = %eval(&lag.+&i.));
 
-    %global qtr_beg_yyqq&zz.;
-    %global qtr_end_yyqq&zz.;
-    %let    qtr_beg_yyqq&zz. = %qtr_beg(yymm = &yymm., lag = %eval(&lag.+&i.));
-    %let    qtr_end_yyqq&zz. = %qtr_end(yymm = &yymm., lag = %eval(&lag.+&i.));    
+    %global qua_beg_yyqq&zz.;
+    %global qua_end_yyqq&zz.;
+    %let    qua_beg_yyqq&zz. = %qua_beg(yymm = &yymm., lag = %eval(&lag.+&i.));
+    %let    qua_end_yyqq&zz. = %qua_end(yymm = &yymm., lag = %eval(&lag.+&i.));    
+  %end; 
+%mend;
+
+/************************************************/;
+
+%macro yyyyzz(yymm = &yymm_cur., lag = 1);
+  %local i;
+  
+  %do i = 0 %to 24 %by 3;
+    %local zz;
+    %let   zz = %sysfunc(putn(&i./12, z2.));
+    
+    %global yyyy&zz.;
+    %let    yyyy&zz. = %yyyy(yymm = &yymm., lag = %eval(&lag.+&i.));
+
+    %global yea_beg_yyyy&zz.;
+    %global yea_end_yyyy&zz.;
+    %let    yea_beg_yyyy&zz. = %yea_beg(yymm = &yymm., lag = %eval(&lag.+&i.));
+    %let    yea_end_yyyy&zz. = %yea_end(yymm = &yymm., lag = %eval(&lag.+&i.));    
   %end; 
 %mend;
 
